@@ -99,6 +99,8 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+DISABLE_AUTO_UPDATE=true
+DISABLE_UPDATE_PROMPT=true
 
 HISTFILE=~/.zsh_history  # ヒストリーファイルのパス
 HISTSIZE=1000           # メモリに保持するヒストリーの数
