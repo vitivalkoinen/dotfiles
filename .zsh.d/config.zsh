@@ -6,6 +6,8 @@ export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
+# posetry settings
+export PATH=$PATH:$HOME/.local/bin
 
 if [ -z "$SSH_AUTH_SOCK" ]; then
     # Check for a currently running instance of the agent
