@@ -18,13 +18,10 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
     RUNNING_AGENT="`ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]'`"
     if [ "$RUNNING_AGENT" = "0" ]; then
         # Launch a new instance of the agent
-        ssh-agent -s &> $HOME/.ssh/ssh-agent
+        ssh-agent -s &>| $HOME/.ssh/ssh-agent
     fi
     eval `cat $HOME/.ssh/ssh-agent`
 fi
-
-# Discord path
-export PATH=$PATH:$HOME/.local/discord/bin
 
 # go path
 export PATH=$PATH:/usr/local/go/bin
@@ -37,3 +34,5 @@ export PATH="$PATH:/opt/nvim-linux64/bin"
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
 
+fpath+=~/.zfunc
+autoload -Uz compinit && compinit
