@@ -130,11 +130,6 @@ unset key
 
 # Created by newuser for 5.9
 
-export PATH=$PATH:$HOME/.local/discord/bin
-
-HISTFILE=~/.zsh_history  # ヒストリーファイルのパス
-HISTSIZE=1000           # メモリに保持するヒストリーの数
-SAVEHIST=1000000        # ヒストリーファイルに保存するヒストリーの数
 
 # load any local settings
 ZSHDHOME="${HOME}/.zsh.d"

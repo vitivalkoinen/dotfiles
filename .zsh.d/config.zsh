@@ -1,3 +1,7 @@
+HISTFILE=~/.zsh_history  # ヒストリーファイルのパス
+HISTSIZE=1000           # メモリに保持するヒストリーの数
+SAVEHIST=1000000        # ヒストリーファイルに保存するヒストリーの数
+
 # my zsh settings
 setopt auto_cd
 
@@ -19,7 +23,8 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
     eval `cat $HOME/.ssh/ssh-agent`
 fi
 
-
+# Discord path
+export PATH=$PATH:$HOME/.local/discord/bin
 
 # go path
 export PATH=$PATH:/usr/local/go/bin
