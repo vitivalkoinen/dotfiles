@@ -140,7 +140,3 @@ if [ -d $ZSHDHOME -a -r $ZSHDHOME -a -x $ZSHDHOME ]; then
             [ \( -f $i -o -h $i \) -a -r $i ] && . $i
     done
 fi
-
-viticode() {
-    echo "????????"
-}
