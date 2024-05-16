@@ -5,12 +5,19 @@ SAVEHIST=1000000        # ヒストリーファイルに保存するヒストリ
 # my zsh settings
 setopt auto_cd
 
-# pyenv settings
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+# direnv settings
+if (( $+commands["direnv"] )); then
+    eval "$(direnv hook zsh)"
+fi
 
-# posetry settings
+# pyenv settings
+if (( $+commands["pyenv"] )); then
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+fi
+
+# poetry settings
 export PATH=$PATH:$HOME/.local/bin
 
 if [ -z "$SSH_AUTH_SOCK" ]; then
