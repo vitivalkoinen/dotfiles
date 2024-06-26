@@ -11,7 +11,8 @@ if (( $+commands["direnv"] )); then
 fi
 
 # pyenv settings
-if (( $+commands["pyenv"] )); then
+export PATH="$HOME/.pyenv/bin:$PATH"
+if builtin command -v pyenv > /dev/null ; then
     export PYENV_ROOT="$HOME/.pyenv"
     command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
