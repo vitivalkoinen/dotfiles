@@ -11,12 +11,9 @@ if (( $+commands["direnv"] )); then
 fi
 
 # pyenv settings
-export PATH="$HOME/.pyenv/bin:$PATH"
-if builtin command -v pyenv > /dev/null ; then
-    export PYENV_ROOT="$HOME/.pyenv"
-    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init -)"
-fi
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
 
 # poetry settings
 export PATH=$PATH:$HOME/.local/bin
