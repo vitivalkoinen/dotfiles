@@ -51,14 +51,16 @@ source ~/.cargo/env
 eval "$(zoxide init zsh)"
 
 # エイリアス
-alias ls='ls --color=auto'
+alias ls='eza'
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 alias grep='grep --color=auto'
+alias cd='z'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias cat='batcat'
+alias vim='nvim'
 
 # Git エイリアス
 alias gs='git status'
