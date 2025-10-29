@@ -59,7 +59,7 @@ alias grep='grep --color=auto'
 alias cd='z'
 alias ..='cd ..'
 alias ...='cd ../..'
-alias cat='batcat'
+alias cat='batcat --paging=never'
 alias vim='nvim'
 
 # Git エイリアス

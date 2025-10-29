@@ -19,6 +19,7 @@
 
 ### 推奨パッケージ
 
+- **[Github CLI](https://cli.github.com/)** - GitHub CLI
 - **[ripgrep](https://github.com/BurntSushi/ripgrep)** - 高速なテキスト検索ツール
 
 ### 開発環境（オプション）
@@ -35,7 +36,7 @@
 1. Clone this repository in user home directory
 
     ```sh
-    git clone https://github.com/vitivalkoinen/dotfiles.git 
+    git clone https://github.com/vitivalkoinen/dotfiles.git
     ```
 
 1. Go to the `~/dotfiles` directory
