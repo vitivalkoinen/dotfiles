@@ -1,1 +1,0 @@
-/home/viti/dotfiles/.zsh.d

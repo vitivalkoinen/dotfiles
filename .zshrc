@@ -1,144 +1,86 @@
-# Start configuration added by Zim install {{{
-#
-# User configuration sourced by interactive shells
-#
+# ~/.zshrc
 
-# -----------------
-# Zsh configuration
-# -----------------
+# パス設定
+export PATH="$HOME/.local/bin:$PATH"
+export PATH=$PATH:/opt/nvim
 
-#
-# History
-#
+autoload -U compinit
+compinit -i
 
-# Remove older command from the history if a duplicate is to be added.
-setopt HIST_IGNORE_ALL_DUPS
+# Sheldonの初期化
+eval "$(sheldon source)"
 
-#
-# Input/output
-#
+# Starshipプロンプト
+eval "$(starship init zsh)"
+source /usr/share/doc/fzf/examples/key-bindings.zsh
+source /usr/share/doc/fzf/examples/completion.zsh
 
-# Set editor default keymap to emacs (`-e`) or vi (`-v`)
-bindkey -e
+# 基本的なZshオプション
+setopt AUTO_CD
+setopt CORRECT
+setopt HIST_VERIFY
+setopt SHARE_HISTORY
+setopt APPEND_HISTORY
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
 
-# Prompt for spelling correction of commands.
-#setopt CORRECT
+# 履歴設定
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
 
-# Customize spelling correction prompt.
-#SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
+# 補完機能
+autoload -Uz compinit
+compinit
 
-# Remove path separator from WORDCHARS.
-WORDCHARS=${WORDCHARS//[\/]}
+# WSL設定
+export BROWSER=/usr/bin/wslview
 
-# -----------------
-# Zim configuration
-# -----------------
+# Go設定
+export PATH=$PATH:/usr/local/go/bin
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/.go
+export PATH=$PATH:$GOPATH/bin
 
-# Use degit instead of git as the default tool to install and update modules.
-#zstyle ':zim:zmodule' use 'degit'
+# Rust設定
+source ~/.cargo/env
 
-# --------------------
-# Module configuration
-# --------------------
+# zoxide (ディレクトリジャンプ)
+eval "$(zoxide init zsh)"
 
-#
-# git
-#
+# エイリアス
+alias ls='ls --color=auto'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias grep='grep --color=auto'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias cat='batcat'
 
-# Set a custom prefix for the generated aliases. The default prefix is 'G'.
-#zstyle ':zim:git' aliases-prefix 'g'
+# Git エイリアス
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline --graph'
+alias gco='git checkout'
+alias gb='git branch'
+alias gd='git diff'
 
-#
-# input
-#
-
-# Append `../` to your input for each `.` you type after an initial `..`
-#zstyle ':zim:input' double-dot-expand yes
-
-#
-# termtitle
-#
-
-# Set a custom terminal title format using prompt expansion escape sequences.
-# See http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html#Simple-Prompt-Escapes
-# If none is provided, the default '%n@%m: %~' is used.
-#zstyle ':zim:termtitle' format '%1~'
-
-#
-# zsh-autosuggestions
-#
-
-# Disable automatic widget re-binding on each precmd. This can be set when
-# zsh-users/zsh-autosuggestions is the last module in your ~/.zimrc.
-ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-
-# Customize the style that the suggestions are shown with.
-# See https://github.com/zsh-users/zsh-autosuggestions/blob/master/README.md#suggestion-highlight-style
-#ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=242'
-
-#
-# zsh-syntax-highlighting
-#
-
-# Set what highlighters will be used.
-# See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters.md
-ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
-
-# Customize the main highlighter styles.
-# See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters/main.md#how-to-tweak-it
-#typeset -A ZSH_HIGHLIGHT_STYLES
-#ZSH_HIGHLIGHT_STYLES[comment]='fg=242'
-
-# ------------------
-# Initialize modules
-# ------------------
-
-ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
-# Download zimfw plugin manager if missing.
-if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
-  if (( ${+commands[curl]} )); then
-    curl -fsSL --create-dirs -o ${ZIM_HOME}/zimfw.zsh \
-        https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
-  else
-    mkdir -p ${ZIM_HOME} && wget -nv -O ${ZIM_HOME}/zimfw.zsh \
-        https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+# ghq
+function ghq-fzf_change_directory() {
+    # 選択したリポジトリへ移動 かつ
+    # 右にリポジトリのディレクトリ詳細を表示
+  local src=$(ghq list | fzf --preview "eza -l -g -a --icons $(ghq root)/{} | tail -n+4 | awk '{print \$6\"/\"\$8\" \"\$9 \" \" \$10}'")
+  if [ -n "$src" ]; then
+    BUFFER="cd $(ghq root)/$src"
+    zle accept-line
   fi
-fi
-# Install missing modules, and update ${ZIM_HOME}/init.zsh if missing or outdated.
-if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
-  source ${ZIM_HOME}/zimfw.zsh init -q
-fi
-# Initialize modules.
-source ${ZIM_HOME}/init.zsh
+  zle -R -c
+}
 
-# ------------------------------
-# Post-init module configuration
-# ------------------------------
-
-#
-# zsh-history-substring-search
-#
-
-zmodload -F zsh/terminfo +p:terminfo
-# Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
-for key ('^[[A' '^P' ${terminfo[kcuu1]}) bindkey ${key} history-substring-search-up
-for key ('^[[B' '^N' ${terminfo[kcud1]}) bindkey ${key} history-substring-search-down
-for key ('k') bindkey -M vicmd ${key} history-substring-search-up
-for key ('j') bindkey -M vicmd ${key} history-substring-search-down
-unset key
-# }}} End configuration added by Zim install
-
-# Created by newuser for 5.9
-
-
-# load any local settings
-ZSHDHOME="${HOME}/.zsh.d"
-
-if [ -d $ZSHDHOME -a -r $ZSHDHOME -a -x $ZSHDHOME ]; then
-    for i in $ZSHDHOME/*; do
-        [[ ${i##*/} = *.zsh ]] &&
-            [ \( -f $i -o -h $i \) -a -r $i ] && . $i
-    done
-fi
-
-cd $HOME
+zle -N ghq-fzf_change_directory
+bindkey '^]' ghq-fzf_change_directory

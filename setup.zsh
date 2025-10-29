@@ -5,7 +5,7 @@ fi
 
 
 DOTFILES_REPO="$HOME/dotfiles"
-DOTFILES=(".zshrc" ".zimrc" ".zsh.d" ".zfunc")
+DOTFILES=(".zshrc")
 
 setup_symlink () {
   local file="$1"
