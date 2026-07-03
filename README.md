@@ -31,6 +31,42 @@
 
 - **[wslview](https://github.com/wslutilities/wslu)** - WSL用ブラウザランチャー
 
+## Aliases
+
+`.zshrc` では以下のエイリアス・関数を設定しています。
+
+### 基本コマンド
+
+| エイリアス | 実体 | 説明 |
+| --- | --- | --- |
+| `ls` | `eza` | `ls`を`eza`に置き換え |
+| `ll` | `ls -alF` | 詳細表示 |
+| `la` | `ls -A` | 隠しファイルも表示 |
+| `l` | `ls -CF` | シンプルな一覧表示 |
+| `cd` | `z` | `zoxide`によるディレクトリジャンプ |
+| `..` | `cd ..` | 一つ上の階層へ移動 |
+| `...` | `cd ../..` | 二つ上の階層へ移動 |
+| `cat` | `batcat --paging=never` | `cat`を`bat`に置き換え（ページャなし） |
+| `vim` | `nvim` | `vim`を`neovim`に置き換え |
+| `grep` | `grep --color=auto` | マッチ箇所を色付け |
+
+### Git エイリアス
+
+| エイリアス | 実体 |
+| --- | --- |
+| `gs` | `git status` |
+| `ga` | `git add` |
+| `gc` | `git commit` |
+| `gp` | `git push` |
+| `gl` | `git log --oneline --graph` |
+| `gco` | `git checkout` |
+| `gb` | `git branch` |
+| `gd` | `git diff` |
+
+### ghqリポジトリジャンプ
+
+`Ctrl + ]` で`ghq list`から`fzf`を使ってリポジトリを選択し、そのディレクトリへ移動できます（プレビューで詳細を確認可能）。
+
 ## Setup guide
 
 1. Clone this repository in user home directory
