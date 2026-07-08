@@ -17,6 +17,7 @@
 - **[bat](https://github.com/sharkdp/bat)** - `cat`の代替
 - **[git](https://git-scm.com/)** - バージョン管理
 - **[nvim](https://neovim.io/)** - Neovim (AppImageでのインストール必須)
+- **[chezmoi](https://www.chezmoi.io/)** - dotfiles管理ツール
 
 ### 推奨パッケージ
 

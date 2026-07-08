@@ -135,12 +135,25 @@ install_nvim () {
   rm -rf "$tmpdir"
 }
 
+install_chezmoi () {
+  if command -v chezmoi >/dev/null 2>&1; then
+    echo "chezmoi はインストール済みです。"
+    return
+  fi
+  echo "chezmoi をインストールします..."
+  mkdir -p "$LOCAL_BIN"
+  if ! sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$LOCAL_BIN"; then
+    echo "警告: chezmoi のインストールに失敗しました。手動でインストールしてください。" >&2
+  fi
+}
+
 install_dependencies () {
   echo "== 必須/推奨パッケージのインストールを開始します =="
   install_apt_packages
   install_sheldon
   install_ghq
   install_nvim
+  install_chezmoi
   echo "== パッケージのインストールが完了しました =="
 }
 
