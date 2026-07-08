@@ -15,10 +15,6 @@ APT_PACKAGES=(
   [tmux]=tmux
 )
 
-is_wsl () {
-  grep -qi microsoft /proc/version 2>/dev/null
-}
-
 if ! command -v apt-get >/dev/null 2>&1; then
   echo "apt-get が見つかりません。必須/推奨パッケージは手動でインストールしてください（README.md参照）。" >&2
   exit 1
@@ -30,10 +26,6 @@ for cmd in "${!APT_PACKAGES[@]}"; do
     missing+=("${APT_PACKAGES[$cmd]}")
   fi
 done
-
-if is_wsl && ! command -v wslview >/dev/null 2>&1; then
-  missing+=("wslu")
-fi
 
 if [ "${#missing[@]}" -eq 0 ]; then
   echo "apt パッケージは全てインストール済みです。"
