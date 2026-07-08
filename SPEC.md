@@ -94,7 +94,7 @@ setup（chezmoiのrun_once script）に以下を加える。
 ## 8. セットアップ手順（移行後のゴールイメージ）
 
 ```sh
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply <github-user>/dotfiles
+sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" init --apply <github-user>/dotfiles
 ```
 
 の1コマンドで、依存パッケージのインストールとdotfile配置が完了する状態を目指す。

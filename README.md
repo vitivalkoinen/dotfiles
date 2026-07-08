@@ -75,7 +75,7 @@
 以下のコマンド一発でセットアップが完了します（[chezmoi](https://www.chezmoi.io/)公式インストールスクリプトによりchezmoi自体の導入から行われます）。
 
 ```sh
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply vitivalkoinen/dotfiles
+sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" init --apply vitivalkoinen/dotfiles
 ```
 
 実行すると`chezmoi init`の対話プロンプトで`name`（Git用の名前）/`email`（Gitのメールアドレス）/`profile`（`work`または`personal`。マシンの用途を表す値）の入力を求められます。入力後、必須/推奨パッケージが未インストールであれば自動でインストールされ、続けてdotfileの配置が行われます（`apt` が使えない環境や対応外のアーキテクチャの場合は、その旨が表示されるので手動でインストールしてください）。一部のパッケージ（apt経由のパッケージ、nvim）のインストールには `sudo` 権限が必要です。
