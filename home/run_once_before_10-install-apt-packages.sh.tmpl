@@ -1,0 +1,51 @@
+#!/bin/bash
+# apt パッケージ名でそのままインストールできるコマンド一覧
+# (コマンド名 -> apt パッケージ名)
+declare -A APT_PACKAGES
+APT_PACKAGES=(
+  [zsh]=zsh
+  [git]=git
+  [curl]=curl
+  [fzf]=fzf
+  [rg]=ripgrep
+  [batcat]=bat
+  [eza]=eza
+  [gh]=gh
+  [zoxide]=zoxide
+  [tmux]=tmux
+)
+
+is_wsl () {
+  grep -qi microsoft /proc/version 2>/dev/null
+}
+
+if ! command -v apt-get >/dev/null 2>&1; then
+  echo "apt-get が見つかりません。必須/推奨パッケージは手動でインストールしてください（README.md参照）。" >&2
+  exit 1
+fi
+
+missing=()
+for cmd in "${!APT_PACKAGES[@]}"; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    missing+=("${APT_PACKAGES[$cmd]}")
+  fi
+done
+
+if is_wsl && ! command -v wslview >/dev/null 2>&1; then
+  missing+=("wslu")
+fi
+
+if [ "${#missing[@]}" -eq 0 ]; then
+  echo "apt パッケージは全てインストール済みです。"
+  exit 0
+fi
+
+echo "apt でインストールします: ${missing[*]}"
+if ! sudo apt-get update; then
+  echo "警告: apt-get update に失敗しました。手動でインストールしてください。" >&2
+  exit 1
+fi
+if ! sudo apt-get install -y "${missing[@]}"; then
+  echo "警告: 一部の apt パッケージのインストールに失敗しました。手動でインストールしてください。" >&2
+  exit 1
+fi

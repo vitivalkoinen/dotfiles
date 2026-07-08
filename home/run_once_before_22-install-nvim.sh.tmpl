@@ -1,0 +1,33 @@
+#!/bin/sh
+ARCH="{{ .chezmoi.arch }}"
+
+if command -v nvim >/dev/null 2>&1; then
+  echo "nvim はインストール済みです。"
+  exit 0
+fi
+
+echo "nvim (AppImage) をインストールします..."
+
+case "$ARCH" in
+  amd64) nvim_arch="x86_64" ;;
+  arm64) nvim_arch="arm64" ;;
+  *)
+    echo "警告: 未対応のアーキテクチャ(${ARCH})のため nvim を自動インストールできません。" >&2
+    exit 1
+    ;;
+esac
+
+tmpdir=$(mktemp -d)
+url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${nvim_arch}.appimage"
+
+if curl -fLsS -o "$tmpdir/nvim.appimage" "$url"; then
+  sudo mkdir -p /opt/nvim
+  sudo mv "$tmpdir/nvim.appimage" /opt/nvim/nvim
+  sudo chmod +x /opt/nvim/nvim
+  echo "nvim を /opt/nvim/nvim にインストールしました。"
+else
+  echo "警告: nvim のダウンロードに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+rm -rf "$tmpdir"

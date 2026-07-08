@@ -1,0 +1,32 @@
+#!/bin/sh
+LOCAL_BIN="$HOME/.local/bin"
+ARCH="{{ .chezmoi.arch }}"
+
+if command -v ghq >/dev/null 2>&1; then
+  echo "ghq はインストール済みです。"
+  exit 0
+fi
+
+echo "ghq をインストールします..."
+
+if [ "$ARCH" != "amd64" ] && [ "$ARCH" != "arm64" ]; then
+  echo "警告: 未対応のアーキテクチャ(${ARCH})のため ghq を自動インストールできません。" >&2
+  exit 1
+fi
+
+tmpdir=$(mktemp -d)
+version=$(curl -s https://api.github.com/repos/x-motemen/ghq/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+asset="ghq_linux_${ARCH}.zip"
+url="https://github.com/x-motemen/ghq/releases/download/${version}/${asset}"
+
+if curl -fLsS -o "$tmpdir/$asset" "$url" && python3 -m zipfile -e "$tmpdir/$asset" "$tmpdir"; then
+  mkdir -p "$LOCAL_BIN"
+  mv "$tmpdir/ghq_linux_${ARCH}/ghq" "$LOCAL_BIN/ghq"
+  chmod +x "$LOCAL_BIN/ghq"
+  echo "ghq を $LOCAL_BIN/ghq にインストールしました。"
+else
+  echo "警告: ghq のダウンロードに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+rm -rf "$tmpdir"

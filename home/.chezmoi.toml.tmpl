@@ -1,0 +1,6 @@
+[data]
+    name = {{ promptString "name" | quote }}
+    email = {{ promptString "email" | quote }}
+    # profile: work / personal などマシンの用途を表す値。
+    # 現時点では分岐の受け口のみで、実際の設定差分には未使用（SPEC.md 4.2節参照）。
+    profile = {{ promptChoice "profile" (list "work" "personal") "personal" | quote }}

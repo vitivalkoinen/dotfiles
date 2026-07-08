@@ -1,0 +1,31 @@
+#!/bin/sh
+LOCAL_BIN="$HOME/.local/bin"
+
+if command -v starship >/dev/null 2>&1; then
+  echo "starship はインストール済みです。"
+  exit 0
+fi
+
+echo "starship をインストールします..."
+mkdir -p "$LOCAL_BIN"
+
+# `curl ... | sh` は #!/bin/sh (dash) では pipefail が効かず、curl失敗時に
+# 空stdinのshがexit 0で終わることで成功と誤判定してしまうため、
+# 一旦ファイルにダウンロードしてcurlの終了コードを個別に判定する。
+tmpdir=$(mktemp -d)
+installer="$tmpdir/install.sh"
+
+if ! curl --proto '=https' -fLsS -o "$installer" https://starship.rs/install.sh; then
+  echo "警告: starship のインストーラーのダウンロードに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+
+if sh "$installer" -y -b "$LOCAL_BIN"; then
+  echo "starship を $LOCAL_BIN にインストールしました。"
+else
+  echo "警告: starship のインストールに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+rm -rf "$tmpdir"
