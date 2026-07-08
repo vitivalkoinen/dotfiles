@@ -18,6 +18,7 @@
 - **[git](https://git-scm.com/)** - バージョン管理
 - **[nvim](https://neovim.io/)** - Neovim (AppImageでのインストール必須)
 - **[chezmoi](https://www.chezmoi.io/)** - dotfiles管理ツール
+- **[tmux](https://github.com/tmux/tmux)** - ターミナルマルチプレクサ
 
 ### 推奨パッケージ
 
