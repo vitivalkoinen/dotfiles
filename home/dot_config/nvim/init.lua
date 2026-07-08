@@ -1,10 +1,7 @@
 -- ~/.config/nvim/init.lua
 --
 -- 最小構成のNeovim設定。プラグインマネージャーは導入しない。
--- 基本オプション設定とキーマップのみを扱う。
---
--- WSLのクリップボード連携（win32yank）は別ステップで対応予定のため、
--- ここでは一般的なvim標準オプションの範囲に留める。
+-- 基本オプション設定とキーマップ、WSLでのクリップボード連携(win32yank)のみを扱う。
 
 local opt = vim.opt
 
@@ -50,3 +47,28 @@ map("n", "<C-l>", "<C-w>l", { desc = "右のウィンドウへ移動" })
 
 -- 検索ハイライトの解除
 map("n", "<leader>h", "<cmd>nohlsearch<cr>", { desc = "検索ハイライト解除" })
+
+-- WSLクリップボード連携（win32yank）
+-- Neovim/Vimには「wsl」を判定する組み込みfeatureが無いため、
+-- uname().release に "microsoft" が含まれるかで判定する
+-- （run_once_before_*.sh.tmpl側の /proc/version 判定と同等のロジック）。
+local function is_wsl()
+  local uv = vim.uv or vim.loop
+  local uname = uv.os_uname()
+  return uname ~= nil and uname.release ~= nil and uname.release:lower():find("microsoft") ~= nil
+end
+
+if is_wsl() and vim.fn.executable("win32yank.exe") == 1 then
+  vim.g.clipboard = {
+    name = "win32yank",
+    copy = {
+      ["+"] = "win32yank.exe -i --crlf",
+      ["*"] = "win32yank.exe -i --crlf",
+    },
+    paste = {
+      ["+"] = "win32yank.exe -o --lf",
+      ["*"] = "win32yank.exe -o --lf",
+    },
+    cache_enabled = 0,
+  }
+end

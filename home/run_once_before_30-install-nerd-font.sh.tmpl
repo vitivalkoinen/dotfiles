@@ -1,0 +1,100 @@
+#!/bin/sh
+# WSL環境で、eza/starshipのアイコン表示に使うNerd Font(Hack Nerd Font)を
+# Windows側のユーザーローカルフォントディレクトリ(%LOCALAPPDATA%\Microsoft\Windows\Fonts)へ配置する。
+#
+# レジストリへのフォント登録・有効化はLinux側から行えないため、
+# このスクリプトは「フォントファイルの配置」までを行い、
+# 配置後に手動でのインストール手順を案内する。
+
+is_wsl () {
+  grep -qi microsoft /proc/version 2>/dev/null
+}
+
+if ! is_wsl; then
+  echo "WSL環境ではないため Nerd Font の配置をスキップします。"
+  exit 0
+fi
+
+FONT_NAME="Hack Nerd Font"
+ASSET="Hack.zip"
+CMD_EXE="/mnt/c/Windows/System32/cmd.exe"
+
+# Windows側の %LOCALAPPDATA% をcmd.exe経由で取得し、wslpathでWSLパスに変換する。
+win_local_appdata=""
+if [ -x "$CMD_EXE" ]; then
+  win_local_appdata=$("$CMD_EXE" /c "echo %LOCALAPPDATA%" 2>/dev/null | tr -d '\r\n')
+fi
+
+local_appdata_wsl=""
+if [ -n "$win_local_appdata" ] && command -v wslpath >/dev/null 2>&1; then
+  local_appdata_wsl=$(wslpath -u "$win_local_appdata" 2>/dev/null)
+fi
+
+if [ -z "$local_appdata_wsl" ] || [ ! -d "$local_appdata_wsl" ]; then
+  # cmd.exe経由での取得に失敗した場合、/mnt/c/Users配下のデフォルト以外の
+  # 唯一のユーザーディレクトリから推測する（複数候補がある場合は自動判定を諦める）。
+  candidate=""
+  count=0
+  for d in /mnt/c/Users/*/; do
+    name=$(basename "$d")
+    case "$name" in
+      Default|"Default User"|Public|"All Users"|desktop.ini) continue ;;
+    esac
+    candidate="$d"
+    count=$((count + 1))
+  done
+
+  if [ "$count" -eq 1 ] && [ -d "${candidate}AppData/Local" ]; then
+    local_appdata_wsl="${candidate}AppData/Local"
+  else
+    echo "警告: Windows側のユーザーディレクトリを自動判定できませんでした。Nerd Fontの自動配置をスキップします。手動でインストールしてください。" >&2
+    exit 1
+  fi
+fi
+
+FONT_DIR="$local_appdata_wsl/Microsoft/Windows/Fonts"
+marker="$FONT_DIR/HackNerdFont-Regular.ttf"
+
+if [ -f "$marker" ]; then
+  echo "Nerd Font ($FONT_NAME) は既に配置済みです。"
+  exit 0
+fi
+
+echo "Nerd Font ($FONT_NAME) を $FONT_DIR にダウンロード・配置します..."
+
+tmpdir=$(mktemp -d)
+url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${ASSET}"
+
+if ! curl -fLsS -o "$tmpdir/$ASSET" "$url"; then
+  echo "警告: Nerd Font のダウンロードに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+
+if ! python3 -m zipfile -e "$tmpdir/$ASSET" "$tmpdir/extracted"; then
+  echo "警告: Nerd Font アーカイブの展開に失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+
+mkdir -p "$FONT_DIR"
+found=0
+for f in "$tmpdir"/extracted/*NerdFont*.ttf "$tmpdir"/extracted/*Nerd*Font*Complete*.ttf; do
+  [ -e "$f" ] || continue
+  cp "$f" "$FONT_DIR/"
+  found=1
+done
+
+rm -rf "$tmpdir"
+
+if [ "$found" -eq 0 ]; then
+  echo "警告: 展開したアーカイブ内にNerd Fontのttfファイルが見つかりませんでした。手動でインストールしてください。" >&2
+  exit 1
+fi
+
+echo "Nerd Font ($FONT_NAME) を $FONT_DIR に配置しました。"
+echo "以下の手順でWindows側にフォントを有効化してください:"
+echo "  1. エクスプローラーで %LOCALAPPDATA%\\Microsoft\\Windows\\Fonts を開く"
+echo "  2. 配置された .ttf ファイルを右クリックして「インストール」を選択する"
+echo "     (反映されない場合は Windowsの設定 > 個人用設定 > フォント からも有効化できます)"
+echo "  3. ターミナルのフォント設定で「$FONT_NAME」を選択してください"

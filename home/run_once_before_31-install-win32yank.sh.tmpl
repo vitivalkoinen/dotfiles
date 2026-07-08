@@ -1,0 +1,43 @@
+#!/bin/sh
+# WSLでのクリップボード連携(vim/nvimのヤンク・ペースト等)のためwin32yank.exeを導入する。
+# 非WSL環境ではWindows側バイナリが不要なためスキップする。
+LOCAL_BIN="$HOME/.local/bin"
+ARCH="{{ .chezmoi.arch }}"
+
+is_wsl () {
+  grep -qi microsoft /proc/version 2>/dev/null
+}
+
+if ! is_wsl; then
+  echo "WSL環境ではないため win32yank のインストールをスキップします。"
+  exit 0
+fi
+
+if [ -x "$LOCAL_BIN/win32yank.exe" ]; then
+  echo "win32yank はインストール済みです。"
+  exit 0
+fi
+
+if [ "$ARCH" != "amd64" ]; then
+  echo "警告: 未対応のアーキテクチャ(${ARCH})のため win32yank を自動インストールできません。" >&2
+  exit 1
+fi
+
+echo "win32yank をインストールします..."
+
+tmpdir=$(mktemp -d)
+asset="win32yank-x64.zip"
+version=$(curl -s https://api.github.com/repos/equalsraf/win32yank/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+url="https://github.com/equalsraf/win32yank/releases/download/${version}/${asset}"
+
+if curl -fLsS -o "$tmpdir/$asset" "$url" && python3 -m zipfile -e "$tmpdir/$asset" "$tmpdir"; then
+  mkdir -p "$LOCAL_BIN"
+  mv "$tmpdir/win32yank.exe" "$LOCAL_BIN/win32yank.exe"
+  chmod +x "$LOCAL_BIN/win32yank.exe"
+  echo "win32yank を $LOCAL_BIN/win32yank.exe にインストールしました。"
+else
+  echo "警告: win32yank のダウンロードに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+rm -rf "$tmpdir"
