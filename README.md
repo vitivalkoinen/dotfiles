@@ -3,7 +3,7 @@
 ## Dependencies
 
 このdotfilesを使用するには以下のパッケージが必要です。
-`setup.zsh` を実行すると、必須パッケージと推奨パッケージは自動でインストールされます（`### 開発環境（オプション）` は対象外のため手動でインストールしてください）。
+[chezmoi](https://www.chezmoi.io/)の`run_once_before_*`スクリプトにより、必須パッケージと推奨パッケージは`chezmoi apply`実行時に自動でインストールされます（`### 開発環境（オプション）` は対象外のため手動でインストールしてください）。
 
 ### 必須パッケージ
 
@@ -72,22 +72,12 @@
 
 ## Setup guide
 
-1. Clone this repository in user home directory
+以下のコマンド一発でセットアップが完了します（[chezmoi](https://www.chezmoi.io/)公式インストールスクリプトによりchezmoi自体の導入から行われます）。
 
-    ```sh
-    git clone https://github.com/vitivalkoinen/dotfiles.git
-    ```
+```sh
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply vitivalkoinen/dotfiles
+```
 
-1. Go to the `~/dotfiles` directory
+実行すると`chezmoi init`の対話プロンプトで`name`（Git用の名前）/`email`（Gitのメールアドレス）/`profile`（`work`または`personal`。マシンの用途を表す値）の入力を求められます。入力後、必須/推奨パッケージが未インストールであれば自動でインストールされ、続けてdotfileの配置が行われます（`apt` が使えない環境や対応外のアーキテクチャの場合は、その旨が表示されるので手動でインストールしてください）。一部のパッケージ（apt経由のパッケージ、nvim）のインストールには `sudo` 権限が必要です。
 
-    ```sh
-    cd ~/dotfiles
-    ```
-
-1. Run `setup.zsh`
-
-    ```sh
-    zsh setup.zsh
-    ```
-
-    必須/推奨パッケージが未インストールの場合は自動でインストールされます（`apt` が使えない環境や対応外のアーキテクチャの場合は、その旨が表示されるので手動でインストールしてください）。一部のパッケージ（apt経由のパッケージ、nvim）のインストールには `sudo` 権限が必要です。
+他のマシンで自分以外のGitHubユーザーのdotfilesを使う場合は、コマンド中の`vitivalkoinen/dotfiles`を対象のGitHubユーザー名/リポジトリ名に置き換えてください。
