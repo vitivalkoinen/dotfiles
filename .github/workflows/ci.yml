@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  chezmoi-apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: passwordlessなsudoが使えることを確認
+        run: sudo -n true
+
+      - name: chezmoiをインストール
+        run: sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
+
+      - name: 1回目の適用 (chezmoi init --apply)
+        run: |
+          chezmoi init --source="${{ github.workspace }}" --apply \
+            --promptString name=CI,email=ci@example.com \
+            --promptChoice profile=personal
+
+      - name: 2回目の適用 (冪等性の確認)
+        run: |
+          chezmoi init --source="${{ github.workspace }}" --apply \
+            --promptString name=CI,email=ci@example.com \
+            --promptChoice profile=personal
+
+      - name: 2回目の適用後にdiffが発生していないことを確認
+        run: |
+          diff_output="$(chezmoi diff --source="${{ github.workspace }}")"
+          if [ -n "$diff_output" ]; then
+            echo "chezmoi diff は空であるべきですが、以下の差分が検出されました:"
+            echo "$diff_output"
+            exit 1
+          fi
+          echo "chezmoi diff は空でした（冪等性OK）。"
