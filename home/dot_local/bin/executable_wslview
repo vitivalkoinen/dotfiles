@@ -1,0 +1,14 @@
+#!/bin/sh
+# wsluパッケージ(wslview)の代替。
+# WSL環境でBROWSER=wslviewとして参照され、gh等の外部プログラムからexecされる想定のため、
+# シェル関数ではなく実行可能なスクリプトファイルとして配置している。
+#
+# ローカルファイルパスが渡された場合はwslpath -wでWindowsパスに変換し、
+# それ以外(URL等)はそのままcmd.exeに渡す。
+CMD_EXE="/mnt/c/Windows/System32/cmd.exe"
+
+if [ -e "$1" ]; then
+  "$CMD_EXE" /c start "" "$(wslpath -w "$1")" 2>/dev/null
+else
+  "$CMD_EXE" /c start "" "$1" 2>/dev/null
+fi

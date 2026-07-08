@@ -32,7 +32,7 @@
 
 ### WSL環境（WSL使用時）
 
-- **[wslview](https://github.com/wslutilities/wslu)** - WSL用ブラウザランチャー
+- **`wslview`** - WSL用ブラウザランチャー。[wslu](https://github.com/wslutilities/wslu)パッケージには依存せず、`~/.local/bin/wslview`として配置される軽量なスクリプトで代替しています（追加のパッケージインストールは不要です）。
 
 ## Aliases
 

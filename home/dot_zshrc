@@ -36,7 +36,11 @@ autoload -Uz compinit
 compinit
 
 # WSL設定
-export BROWSER=/usr/bin/wslview
+# wsluパッケージ(wslview)には依存せず、~/.local/bin/wslview(実行可能スクリプト)で代替する。
+# gh等の外部プログラムからexecされてもBROWSERが機能するよう、シェル関数ではなく実行ファイルにしている。
+if grep -qi microsoft /proc/version 2>/dev/null; then
+  export BROWSER=wslview
+fi
 
 # Go設定
 export PATH=$PATH:/usr/local/go/bin
