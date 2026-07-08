@@ -1,0 +1,31 @@
+#!/bin/sh
+LOCAL_BIN="$HOME/.local/bin"
+
+if command -v sheldon >/dev/null 2>&1; then
+  echo "sheldon はインストール済みです。"
+  exit 0
+fi
+
+echo "sheldon をインストールします..."
+mkdir -p "$LOCAL_BIN"
+
+# `curl ... | bash` は #!/bin/sh (dash) では pipefail が効かず、curl失敗時に
+# 空stdinのbashがexit 0で終わることで成功と誤判定してしまうため、
+# 一旦ファイルにダウンロードしてcurlの終了コードを個別に判定する。
+tmpdir=$(mktemp -d)
+installer="$tmpdir/crate.sh"
+
+if ! curl --proto '=https' -fLsS -o "$installer" https://rossmacarthur.github.io/install/crate.sh; then
+  echo "警告: sheldon のインストーラーのダウンロードに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+
+if bash "$installer" --repo rossmacarthur/sheldon --to "$LOCAL_BIN"; then
+  echo "sheldon を $LOCAL_BIN にインストールしました。"
+else
+  echo "警告: sheldon のインストールに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+rm -rf "$tmpdir"
