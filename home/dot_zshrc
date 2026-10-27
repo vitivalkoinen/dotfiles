@@ -53,6 +53,10 @@ source ~/.cargo/env
 
 # zoxide (ディレクトリジャンプ)
 eval "$(zoxide init zsh)"
+# Claude Code内ではフックが引き継がれず警告が出るため抑止
+if [[ -n "$CLAUDECODE" ]]; then
+  export _ZO_DOCTOR=0
+fi
 
 # エイリアス
 alias ls='eza'
