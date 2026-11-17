@@ -12,6 +12,11 @@ if [ -z "$MISE" ]; then
   exit 1
 fi
 
+# 旧 .zshrc で export していた GOROOT=/usr/local/go が実行中のシェルに残っていると、
+# mise がインストール後に実行する `go version` がそのGOROOTを参照して失敗するため外す。
+# （GOROOT は mise activate が mise 管理の Go に合わせて設定する）
+unset GOROOT
+
 echo "mise で Node.js / Go をインストールします..."
 # カレントディレクトリにあるプロジェクト固有の mise.toml を拾わないよう、$HOME で実行する。
 if (cd "$HOME" && "$MISE" install --yes); then
