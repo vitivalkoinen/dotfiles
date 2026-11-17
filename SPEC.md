@@ -83,6 +83,11 @@ setup（chezmoiのrun_once script）に以下を加える。
 - **Nerd Fontインストール補助**: eza/starshipのアイコン表示に必要なNerd Fontを、WSLのLinux側からWindows側フォントディレクトリへ配置する、またはダウンロードして案内するスクリプトを用意する（Windows側の設定適用＝レジストリ登録やフォント有効化まではLinux側から直接操作できないため、「配置 + 手動でのインストール手順案内」までをスコープとする）。
 - **win32yank連携**: WSLでのクリップボード連携（vim/nvimのヤンク等）のため `win32yank.exe` を導入し、`.zshrc`または`init.lua`から参照できるようにする。
 
+### 6.1 ログインシェルの変更
+
+- `chezmoi apply` 時、ユーザーのログインシェル（`/etc/passwd` の登録値）が zsh でなければ `sudo chsh -s <zshのパス>` で zsh に変更する（`run_once_after_10-set-default-shell.sh.tmpl`）。
+- `chsh` 単体ではパスワード入力が必要になるため、aptインストールと同様に `sudo` 経由とする。既に zsh であれば何もしない。
+
 ## 7. CI（自動検証）
 
 - **GitHub Actionsを要件に含める。**

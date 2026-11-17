@@ -78,6 +78,6 @@
 sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" init --apply vitivalkoinen/dotfiles
 ```
 
-実行すると`chezmoi init`の対話プロンプトで`name`（Git用の名前）/`email`（Gitのメールアドレス）/`profile`（`work`または`personal`。マシンの用途を表す値）の入力を求められます。入力後、必須/推奨パッケージが未インストールであれば自動でインストールされ、続けてdotfileの配置が行われます（`apt` が使えない環境や対応外のアーキテクチャの場合は、その旨が表示されるので手動でインストールしてください）。一部のパッケージ（apt経由のパッケージ、nvim）のインストールには `sudo` 権限が必要です。
+実行すると`chezmoi init`の対話プロンプトで`name`（Git用の名前）/`email`（Gitのメールアドレス）/`profile`（`work`または`personal`。マシンの用途を表す値）の入力を求められます。入力後、必須/推奨パッケージが未インストールであれば自動でインストールされ、続けてdotfileの配置が行われます（`apt` が使えない環境や対応外のアーキテクチャの場合は、その旨が表示されるので手動でインストールしてください）。最後に、ログインシェルが zsh でなければ `sudo chsh` で zsh に変更されます（反映には再ログインが必要です）。一部のパッケージ（apt経由のパッケージ、nvim）のインストールとログインシェルの変更には `sudo` 権限が必要です。
 
 他のマシンで自分以外のGitHubユーザーのdotfilesを使う場合は、コマンド中の`vitivalkoinen/dotfiles`を対象のGitHubユーザー名/リポジトリ名に置き換えてください。

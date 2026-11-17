@@ -1,0 +1,33 @@
+#!/bin/sh
+# ログインシェルが zsh でなければ zsh に変更する。
+# zsh 自体は run_once_before_10-install-apt-packages でインストール済みの前提。
+
+user="$(id -un)"
+
+zsh_path="$(command -v zsh)"
+if [ -z "$zsh_path" ]; then
+  echo "警告: zsh が見つからないため、ログインシェルを変更できません。" >&2
+  exit 1
+fi
+
+# $SHELL は親プロセスから引き継いだ値で古い可能性があるため、passwd の登録値で判定する。
+current_shell="$(getent passwd "$user" | cut -d: -f7)"
+if [ "$(basename "$current_shell")" = "zsh" ]; then
+  echo "ログインシェルは既に zsh です ($current_shell)。"
+  exit 0
+fi
+
+# chsh は /etc/shells に記載のないシェルを拒否するため、事前に確認する。
+if ! grep -qx "$zsh_path" /etc/shells; then
+  echo "警告: $zsh_path が /etc/shells に登録されていません。手動で登録してから chsh -s $zsh_path を実行してください。" >&2
+  exit 1
+fi
+
+echo "ログインシェルを $current_shell から $zsh_path に変更します..."
+# chsh 単体だとユーザーのパスワード入力を求められるため、apt と同様に sudo 経由で実行する。
+if sudo chsh -s "$zsh_path" "$user"; then
+  echo "ログインシェルを $zsh_path に変更しました。反映には再ログイン（WSL の場合は wsl --shutdown 後の再起動）が必要です。"
+else
+  echo "警告: ログインシェルの変更に失敗しました。手動で chsh -s $zsh_path を実行してください。" >&2
+  exit 1
+fi
