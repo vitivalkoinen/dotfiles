@@ -1,0 +1,7 @@
+# mise (https://mise.jdx.dev/) のグローバル設定
+# Node.js / Go のバージョン管理を担う。Python は uv、Rust は rustup で管理するためここには含めない。
+# SPECのバージョン方針（常に最新版を取得する）に合わせ、バージョンは固定しない。
+
+[tools]
+node = "lts"
+go = "latest"

@@ -48,13 +48,19 @@ if grep -qi microsoft /proc/version 2>/dev/null; then
   export BROWSER=wslview
 fi
 
-# Go設定
-export PATH=$PATH:/usr/local/go/bin
-export GOROOT=/usr/local/go
+# 言語ごとのバージョン管理
+# - Node.js / Go: mise（~/.config/mise/config.toml）
+# - Python: uv（~/.local/bin に配置済みのため追加設定なし）
+# - Rust: rustup
+if (( $+commands[mise] )); then
+  eval "$(mise activate zsh)"
+fi
+
+# Go設定（GOROOT は mise が設定するため、ここでは指定しない）
 export GOPATH=$HOME/.go
 export PATH=$PATH:$GOPATH/bin
 
-# Rust設定（Rustはオプションのため、未インストールならスキップ）
+# Rust設定（rustup 未インストールならスキップ）
 [[ -f ~/.cargo/env ]] && source ~/.cargo/env
 
 # zoxide (ディレクトリジャンプ)

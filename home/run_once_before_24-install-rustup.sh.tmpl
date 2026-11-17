@@ -1,0 +1,33 @@
+#!/bin/sh
+# Rust のバージョン管理は公式の rustup で行う（stable ツールチェーンも同時に入る）。
+# PATH は .zshrc の ~/.cargo/env で通すため、インストーラーにシェル設定を書き換えさせない。
+LOCAL_BIN="$HOME/.local/bin"
+
+if command -v rustup >/dev/null 2>&1 || [ -x "$HOME/.cargo/bin/rustup" ]; then
+  echo "rustup はインストール済みです。"
+  exit 0
+fi
+
+echo "rustup をインストールします..."
+mkdir -p "$LOCAL_BIN"
+
+# `curl ... | sh` は #!/bin/sh (dash) では pipefail が効かず、curl失敗時に
+# 空stdinのshがexit 0で終わることで成功と誤判定してしまうため、
+# 一旦ファイルにダウンロードしてcurlの終了コードを個別に判定する。
+tmpdir=$(mktemp -d)
+installer="$tmpdir/install.sh"
+
+if ! curl --proto '=https' -fLsS -o "$installer" https://sh.rustup.rs; then
+  echo "警告: rustup のインストーラーのダウンロードに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+
+if sh "$installer" -y --no-modify-path; then
+  echo "rustup を $HOME/.cargo/bin にインストールしました。"
+else
+  echo "警告: rustup のインストールに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+rm -rf "$tmpdir"
