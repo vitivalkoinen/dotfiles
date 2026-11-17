@@ -1,5 +1,7 @@
 #!/bin/sh
 LOCAL_BIN="$HOME/.local/bin"
+ARCH="{{ .chezmoi.arch }}"
+REPO="rossmacarthur/sheldon"
 
 if command -v sheldon >/dev/null 2>&1; then
   echo "sheldon はインストール済みです。"
@@ -7,24 +9,37 @@ if command -v sheldon >/dev/null 2>&1; then
 fi
 
 echo "sheldon をインストールします..."
-mkdir -p "$LOCAL_BIN"
 
-# `curl ... | bash` は #!/bin/sh (dash) では pipefail が効かず、curl失敗時に
-# 空stdinのbashがexit 0で終わることで成功と誤判定してしまうため、
-# 一旦ファイルにダウンロードしてcurlの終了コードを個別に判定する。
-tmpdir=$(mktemp -d)
-installer="$tmpdir/crate.sh"
+case "$ARCH" in
+  amd64) target="x86_64-unknown-linux-musl" ;;
+  arm64) target="aarch64-unknown-linux-musl" ;;
+  *)
+    echo "警告: 未対応のアーキテクチャ(${ARCH})のため sheldon を自動インストールできません。" >&2
+    exit 1
+    ;;
+esac
 
-if ! curl --proto '=https' -fLsS -o "$installer" https://rossmacarthur.github.io/install/crate.sh; then
-  echo "警告: sheldon のインストーラーのダウンロードに失敗しました。手動でインストールしてください。" >&2
-  rm -rf "$tmpdir"
+# 公式インストーラー(crate.sh)は最新版の判定に認証なしで GitHub API を呼ぶため、
+# レート制限(403)で失敗することがある。API を使わず、github.com の
+# releases/latest のリダイレクト先URL(.../releases/tag/<version>)からバージョンを得る。
+latest_url=$(curl --proto '=https' -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/releases/latest")
+version="${latest_url##*/}"
+if [ -z "$version" ] || [ "$version" = "latest" ]; then
+  echo "警告: sheldon の最新バージョンを取得できませんでした。手動でインストールしてください。" >&2
   exit 1
 fi
 
-if bash "$installer" --repo rossmacarthur/sheldon --to "$LOCAL_BIN"; then
-  echo "sheldon を $LOCAL_BIN にインストールしました。"
+tmpdir=$(mktemp -d)
+asset="sheldon-${version}-${target}.tar.gz"
+url="https://github.com/$REPO/releases/download/${version}/${asset}"
+
+if curl --proto '=https' -fLsS -o "$tmpdir/$asset" "$url" && tar -xzf "$tmpdir/$asset" -C "$tmpdir"; then
+  mkdir -p "$LOCAL_BIN"
+  mv "$tmpdir/sheldon" "$LOCAL_BIN/sheldon"
+  chmod +x "$LOCAL_BIN/sheldon"
+  echo "sheldon ${version} を $LOCAL_BIN/sheldon にインストールしました。"
 else
-  echo "警告: sheldon のインストールに失敗しました。手動でインストールしてください。" >&2
+  echo "警告: sheldon のダウンロードに失敗しました。手動でインストールしてください。" >&2
   rm -rf "$tmpdir"
   exit 1
 fi

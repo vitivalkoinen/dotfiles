@@ -27,8 +27,9 @@ echo "win32yank をインストールします..."
 
 tmpdir=$(mktemp -d)
 asset="win32yank-x64.zip"
-version=$(curl -s https://api.github.com/repos/equalsraf/win32yank/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
-url="https://github.com/equalsraf/win32yank/releases/download/${version}/${asset}"
+# GitHub API(認証なしだとレート制限で403になることがある)を使わず、
+# releases/latest/download で最新リリースのアセットを直接取得する。
+url="https://github.com/equalsraf/win32yank/releases/latest/download/${asset}"
 
 if curl -fLsS -o "$tmpdir/$asset" "$url" && python3 -m zipfile -e "$tmpdir/$asset" "$tmpdir"; then
   mkdir -p "$LOCAL_BIN"
