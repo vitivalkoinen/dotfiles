@@ -1,0 +1,36 @@
+# Sheldon (https://sheldon.cli.rs/) のプラグイン設定
+# 読み込み順に意味があるため、並び替える際は各コメントを確認すること。
+
+shell = "zsh"
+
+# 追加の補完定義。compinit より前に fpath へ追加する必要がある。
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+dir = "src"
+apply = ["fpath"]
+
+# zsh-completions の fpath 追加後、fzf-tab の読み込み前に compinit を実行する。
+[plugins.compinit]
+inline = "autoload -Uz compinit && compinit"
+
+# Tab補完の候補選択をfzfで行う。compinit の後、かつ ZLE ウィジェットを
+# ラップするプラグイン（autosuggestions / fast-syntax-highlighting）より前に読み込む。
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
+
+# fish風の略語展開
+[plugins.zsh-abbr]
+github = "olets/zsh-abbr"
+
+# 履歴に基づく入力補完の候補表示
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+
+# シンタックスハイライト
+[plugins.fast-syntax-highlighting]
+github = "zdharma-continuum/fast-syntax-highlighting"
+
+# 入力中の文字列を含む履歴を上下キーで検索する。
+# シンタックスハイライトより後に読み込む必要がある（公式READMEの指示）。
+[plugins.zsh-history-substring-search]
+github = "zsh-users/zsh-history-substring-search"

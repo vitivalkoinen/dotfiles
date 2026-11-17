@@ -4,12 +4,20 @@
 export PATH="$HOME/.local/bin:$PATH"
 export PATH=$PATH:/opt/nvim
 
-autoload -U compinit
-compinit -i
-
 # Sheldonの初期化（設定ファイルが無い環境ではエラーになるためスキップ）
-if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/sheldon/plugins.toml" ]]; then
+# compinit は zsh-completions の fpath 追加後に実行する必要があるため、plugins.toml 側で実行する。
+if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/sheldon/plugins.toml" ]] && (( $+commands[sheldon] )); then
   eval "$(sheldon source)"
+else
+  autoload -Uz compinit && compinit
+fi
+
+# zsh-history-substring-search: 上下キーで入力中の文字列を含む履歴を検索
+if (( $+widgets[history-substring-search-up] )); then
+  bindkey '^[[A' history-substring-search-up
+  bindkey '^[[B' history-substring-search-down
+  bindkey -M emacs '^P' history-substring-search-up
+  bindkey -M emacs '^N' history-substring-search-down
 fi
 
 # Starshipプロンプト
@@ -32,10 +40,6 @@ setopt HIST_IGNORE_SPACE
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
-
-# 補完機能
-autoload -Uz compinit
-compinit
 
 # WSL設定
 # wsluパッケージ(wslview)には依存せず、~/.local/bin/wslview(実行可能スクリプト)で代替する。

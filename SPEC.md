@@ -75,6 +75,7 @@ chezmoiのソースディレクトリ構造（`dot_` prefixによるdotfile表�
 | `.gitconfig` | `user.name`/`user.email` をテンプレート変数化。それ以外（alias, core設定等）は固定値でよい |
 | Neovim設定一式 | `init.lua` 等。**新規に最小構成を作成する**（既存の移植ではない）。プラグインなし、基本オプション設定とキーマップ程度のスコープ |
 | `.tmux.conf` | tmuxを新規に依存パッケージへ追加し、設定ファイルも管理対象にする。プラグインマネージャー（TPM等）の要否は実装時に決める簡易スコープでよい |
+| sheldonの`plugins.toml` | `~/.config/sheldon/plugins.toml`。zsh-completions / fzf-tab / zsh-abbr / zsh-autosuggestions / fast-syntax-highlighting / zsh-history-substring-search を読み込む。読み込み順に制約があるため（compinitの前後など）、順序の理由をファイル内コメントに残す |
 
 ## 6. WSL周辺対応
 
