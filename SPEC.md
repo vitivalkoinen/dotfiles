@@ -52,6 +52,16 @@ chezmoiのソースディレクトリ構造（`dot_` prefixによるdotfile表�
 
 - 現行通り `sheldon` を採用するが、将来的に他の選択肢に乗り換える可能性を考慮し、Zshプラグイン管理のロジックは `.zshrc` 側で「プラグインマネージャー呼び出し」を1箇所に集約し、差し替えが容易な構造にする（設計の努力目標。今回のスコープで抽象化レイヤーを新設するところまでは求めない）。
 
+### 3.5 言語のバージョン管理
+
+各言語のランタイムは以下のバージョン管理ツールで導入する。
+
+| 言語 | ツール | 備考 |
+| --- | --- | --- |
+| Node.js / Go | mise | `~/.config/mise/config.toml` をchezmoiで管理し、`run_onchange_after_*` で `mise install` を実行する。Volta（2025-11に開発終了、mise移行を推奨）とgvm（2023-08以降更新なし、`cd`を上書きしzoxideと衝突）は採用しない |
+| Python | uv | Python本体のバージョン管理・パッケージ管理ともにuvで行う。プロジェクトの `requires-python` / `.python-version` に応じて自動で本体を取得するため、グローバルな本体のインストールは行わない |
+| Rust | rustup | Rust公式。`rust-toolchain.toml` を直接読むため、miseを経由しない |
+
 ## 4. マルチプロファイル対応
 
 ### 4.1 要件

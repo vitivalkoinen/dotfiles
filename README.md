@@ -3,7 +3,7 @@
 ## Dependencies
 
 このdotfilesを使用するには以下のパッケージが必要です。
-[chezmoi](https://www.chezmoi.io/)の`run_once_before_*`スクリプトにより、必須パッケージと推奨パッケージは`chezmoi apply`実行時に自動でインストールされます（`### 開発環境（オプション）` は対象外のため手動でインストールしてください）。
+[chezmoi](https://www.chezmoi.io/)の`run_once_before_*`スクリプトにより、必須パッケージと推奨パッケージは`chezmoi apply`実行時に自動でインストールされます。
 
 ### 必須パッケージ
 
@@ -25,10 +25,13 @@
 - **[Github CLI](https://cli.github.com/)** - GitHub CLI
 - **[ripgrep](https://github.com/BurntSushi/ripgrep)** - 高速なテキスト検索ツール
 
-### 開発環境（オプション）
+### 言語のバージョン管理
 
-- **[Go](https://golang.org/)** - Go言語
-- **[Rust](https://www.rust-lang.org/)** - Rust言語
+各言語は以下のバージョン管理ツールでインストールします（`chezmoi apply`時に自動でインストールされます）。
+
+- **[mise](https://mise.jdx.dev/)** - Node.js / Go のバージョン管理。グローバルで使うバージョンは`~/.config/mise/config.toml`で指定します（初期値はNode.jsがLTS、Goが最新版）
+- **[uv](https://docs.astral.sh/uv/)** - Python本体のバージョン管理とパッケージ管理
+- **[rustup](https://rustup.rs/)** - Rustツールチェーンの管理（stableが同時にインストールされます）
 
 ### WSL環境（WSL使用時）
 
