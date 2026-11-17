@@ -7,8 +7,10 @@ export PATH=$PATH:/opt/nvim
 autoload -U compinit
 compinit -i
 
-# Sheldonの初期化
-eval "$(sheldon source)"
+# Sheldonの初期化（設定ファイルが無い環境ではエラーになるためスキップ）
+if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/sheldon/plugins.toml" ]]; then
+  eval "$(sheldon source)"
+fi
 
 # Starshipプロンプト
 eval "$(starship init zsh)"
@@ -48,8 +50,8 @@ export GOROOT=/usr/local/go
 export GOPATH=$HOME/.go
 export PATH=$PATH:$GOPATH/bin
 
-# Rust設定
-source ~/.cargo/env
+# Rust設定（Rustはオプションのため、未インストールならスキップ）
+[[ -f ~/.cargo/env ]] && source ~/.cargo/env
 
 # zoxide (ディレクトリジャンプ)
 eval "$(zoxide init zsh)"
