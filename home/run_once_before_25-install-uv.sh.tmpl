@@ -1,0 +1,33 @@
+#!/bin/sh
+# Python は本体のバージョン管理・パッケージ管理ともに uv で行う。
+# PATH は .zshrc で ~/.local/bin を通しているため、インストーラーにシェル設定を書き換えさせない。
+LOCAL_BIN="$HOME/.local/bin"
+
+if command -v uv >/dev/null 2>&1 || [ -x "$LOCAL_BIN/uv" ]; then
+  echo "uv はインストール済みです。"
+  exit 0
+fi
+
+echo "uv をインストールします..."
+mkdir -p "$LOCAL_BIN"
+
+# `curl ... | sh` は #!/bin/sh (dash) では pipefail が効かず、curl失敗時に
+# 空stdinのshがexit 0で終わることで成功と誤判定してしまうため、
+# 一旦ファイルにダウンロードしてcurlの終了コードを個別に判定する。
+tmpdir=$(mktemp -d)
+installer="$tmpdir/install.sh"
+
+if ! curl --proto '=https' -fLsS -o "$installer" https://astral.sh/uv/install.sh; then
+  echo "警告: uv のインストーラーのダウンロードに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+
+if UV_INSTALL_DIR="$LOCAL_BIN" UV_NO_MODIFY_PATH=1 sh "$installer"; then
+  echo "uv を $LOCAL_BIN にインストールしました。"
+else
+  echo "警告: uv のインストールに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+rm -rf "$tmpdir"

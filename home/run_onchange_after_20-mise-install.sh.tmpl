@@ -1,0 +1,22 @@
+#!/bin/sh
+# dot_config/mise/config.toml の [tools] に書かれたツールをインストールする。
+# 設定ファイルが変わったときに再実行されるよう、内容のハッシュを埋め込んでいる。
+# config.toml hash: {{ include "dot_config/mise/config.toml" | sha256sum }}
+
+MISE="$HOME/.local/bin/mise"
+if ! [ -x "$MISE" ]; then
+  MISE="$(command -v mise)"
+fi
+if [ -z "$MISE" ]; then
+  echo "警告: mise が見つからないため、Node.js / Go をインストールできません。" >&2
+  exit 1
+fi
+
+echo "mise で Node.js / Go をインストールします..."
+# カレントディレクトリにあるプロジェクト固有の mise.toml を拾わないよう、$HOME で実行する。
+if (cd "$HOME" && "$MISE" install --yes); then
+  echo "mise によるインストールが完了しました。"
+else
+  echo "警告: mise によるインストールに失敗しました。手動で mise install を実行してください。" >&2
+  exit 1
+fi

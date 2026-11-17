@@ -1,0 +1,32 @@
+#!/bin/sh
+# Node.js / Go のバージョン管理は mise で行う（使うバージョンは dot_config/mise/config.toml で指定）。
+LOCAL_BIN="$HOME/.local/bin"
+
+if command -v mise >/dev/null 2>&1 || [ -x "$LOCAL_BIN/mise" ]; then
+  echo "mise はインストール済みです。"
+  exit 0
+fi
+
+echo "mise をインストールします..."
+mkdir -p "$LOCAL_BIN"
+
+# `curl ... | sh` は #!/bin/sh (dash) では pipefail が効かず、curl失敗時に
+# 空stdinのshがexit 0で終わることで成功と誤判定してしまうため、
+# 一旦ファイルにダウンロードしてcurlの終了コードを個別に判定する。
+tmpdir=$(mktemp -d)
+installer="$tmpdir/install.sh"
+
+if ! curl --proto '=https' -fLsS -o "$installer" https://mise.run; then
+  echo "警告: mise のインストーラーのダウンロードに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+
+if MISE_INSTALL_PATH="$LOCAL_BIN/mise" sh "$installer"; then
+  echo "mise を $LOCAL_BIN にインストールしました。"
+else
+  echo "警告: mise のインストールに失敗しました。手動でインストールしてください。" >&2
+  rm -rf "$tmpdir"
+  exit 1
+fi
+rm -rf "$tmpdir"
